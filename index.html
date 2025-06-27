@@ -9,12 +9,29 @@
   <button onclick="sendMessage()">Invia</button>
   <p><strong>Risposta:</strong> <span id="reply"></span></p>
 
-  <script>
-    async function sendMessage() {
-      const message = document.getElementById("input").value;
-      // Per ora risponde con lo stesso messaggio
-      document.getElementById("reply").innerText = "Hai scritto: " + message;
+<script>
+  async function sendMessage() {
+    const message = document.getElementById("input").value;
+
+    const response = await fetch("https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer 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",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: message })
+    });
+
+    const data = await response.json();
+
+    // Controlla errore o risposta generata
+    if (data.error) {
+      document.getElementById("reply").innerText = "Errore: " + data.error;
+    } else {
+      const reply = data.generated_text  data[0]?.generated_text  "Nessuna risposta generata";
+      document.getElementById("reply").innerText = reply;
     }
-  </script>
+  }
+</script>
 </body>
 </html>
